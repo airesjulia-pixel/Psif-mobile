@@ -8,14 +8,14 @@ import {
   View,
 } from "react-native";
 
-import Voltar from "../../../components/voltar";
+import Voltar from "../../components/voltar";
 import {
   responderEncaminhamento,
   rotuloDaUrgencia,
   usePendentes,
   validarRetorno,
-} from "../../../data/encaminhamento";
-import { useSessao } from "../../../data/sessao";
+} from "../../data/encaminhamento";
+import { useSessao } from "../../data/sessao";
 
 export default function EncaminhamentosRecebidos() {
   const sessao = useSessao();

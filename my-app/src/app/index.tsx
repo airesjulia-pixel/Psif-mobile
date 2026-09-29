@@ -1,6 +1,6 @@
-import React, { useEffect, useRef } from 'react';
-import { View, Text, StyleSheet, Animated } from 'react-native';
 import { useRouter } from 'expo-router';
+import { useEffect, useRef } from 'react';
+import { Animated, StyleSheet, Text, View } from 'react-native';
 
 export default function SplashScreen() {
   const router = useRouter();
@@ -12,7 +12,7 @@ export default function SplashScreen() {
       duration: 1800,
       useNativeDriver: false,
     }).start(() => {
-      router.replace("./Inicial/deshboard");
+      router.replace("/(tabs)");
     });
   }, []);
 

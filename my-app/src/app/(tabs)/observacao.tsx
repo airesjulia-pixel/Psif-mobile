@@ -1,13 +1,13 @@
-import { ScrollView, StyleSheet, Text, TouchableOpacity, View } from "react-native";
 import { router } from "expo-router";
+import { ScrollView, StyleSheet, Text, TouchableOpacity, View } from "react-native";
 
+import Voltar from "../../components/voltar";
 import {
   rotuloDaUrgencia,
   rotuloDoStatus,
   useEncaminhamentos,
-} from "../../../data/encaminhamento";
-import { useSessao } from "../../../data/sessao";
-import Voltar from "../../../components/voltar";
+} from "../../data/encaminhamento";
+import { useSessao } from "../../data/sessao";
 
 export default function Observacoes() {
   const sessao = useSessao();

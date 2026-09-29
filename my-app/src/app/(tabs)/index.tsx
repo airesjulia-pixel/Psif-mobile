@@ -1,16 +1,14 @@
-import React from "react";
+import { useRouter } from "expo-router";
 import {
-  View,
+  ScrollView,
+  StyleSheet,
   Text,
   TouchableOpacity,
-  StyleSheet,
-  ScrollView,
+  View,
 } from "react-native";
-import { router } from "expo-router";
 
-import Voltar from "../../components/voltar";
-import { acoesDoPerfil, rotuloDoPerfil, saudacaoDoPerfil } from "../../data/perfil";
 import { useEncaminhamentos } from "../../data/encaminhamento";
+import { acoesDoPerfil } from "../../data/perfil";
 import { encerrarSessao, useSessao } from "../../data/sessao";
 
 export default function Dashboard() {
@@ -20,31 +18,16 @@ export default function Dashboard() {
   const encaminhamentos = useEncaminhamentos(
     ehProfessora ? sessao?.email : undefined
   );
+  const router = useRouter();
 
   function sair() {
     encerrarSessao();
-    router.replace("./Login/telaLogin");
+    router.replace("/Login/pageLogin");
   }
 
   return (
     <View style={styles.container}>
       <ScrollView showsVerticalScrollIndicator={false}>
-        <View style={styles.voltar}>
-          <Voltar onPress={sair} />
-        </View>
-
-        {/* topo */}
-        <View style={styles.header}>
-          <View>
-            <Text style={styles.greeting}>{saudacaoDoPerfil(perfil)}</Text>
-            <Text style={styles.subGreeting}>
-              Perfil: {rotuloDoPerfil(perfil)}
-            </Text>
-          </View>
-
-          <Text style={styles.menu}>☰</Text>
-        </View>
-
         {/* card principal */}
         <View style={styles.mainCard}>
           <View>
@@ -103,28 +86,6 @@ export default function Dashboard() {
           </TouchableOpacity>
         ))}
       </ScrollView>
-
-
-      <View style={styles.bottomNav}>
-        <TouchableOpacity onPress={() => router.push("/Inicial/deshboard")}>
-            <Text style={styles.navItem}>🏠{"\n"}Início</Text>
-        </TouchableOpacity>
-        <TouchableOpacity onPress={() => router.push("/Atendimento/Encaminhamento/observacao")}>
-            <Text style={styles.navItem}>
-                {ehProfessora ? `📝${"\n"}Observ.` : `📅${"\n"}Atend.`}
-            </Text>
-        </TouchableOpacity>
-        <TouchableOpacity onPress={() => router.push("/Aluno/pageAluno")}>
-            <Text style={styles.navItem}>
-                {ehProfessora ? `👨‍🎓${"\n"}Alunos` : `👩‍🏫${"\n"}Professores`}
-            </Text>
-        </TouchableOpacity>
-        <TouchableOpacity onPress={() => router.push("/Atendimento/Encaminhamento/pageEncaminhamento")}>
-            <Text style={styles.navItem}>
-              {ehProfessora ? `📤${"\n"}Enviados` : `📄${"\n"}Relat.`}
-            </Text>
-        </TouchableOpacity>
-      </View>
     </View>
   );
 }
@@ -133,7 +94,7 @@ const styles = StyleSheet.create({
   container: {
     flex: 1,
     backgroundColor: "#fff",
-    paddingTop: 50,
+    paddingTop: 10,
   },
 
   voltar: {
