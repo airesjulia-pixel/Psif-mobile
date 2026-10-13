@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import {
   View,
   Text,
@@ -7,20 +7,47 @@ import {
   TouchableOpacity,
   TextInput,
   Image,
+  ActivityIndicator,
 } from "react-native";
 import { router } from "expo-router";
 
-import { ALUNOS, CURSOS, filtrarAlunos } from "../../data/aluno";
+import { CURSOS, filtrarAlunos } from "../../data/aluno";
 import { useSessao } from "../../data/sessao";
 import Voltar from "../../components/voltar";
+import { supabase } from "../../../../lib/supabase"
 
 export default function Alunos() {
   const [cursoSelecionado, setCursoSelecionado] = useState("");
   const [pesquisa, setPesquisa] = useState("");
+  const [alunos, setAlunos] = useState<any[]>([]);
+  const [carregando, setCarregando] = useState(true);
   const sessao = useSessao();
   const ehProfessora = (sessao?.perfil ?? "professora") === "professora";
 
-  const alunosFiltrados = filtrarAlunos(ALUNOS, {
+  useEffect(() => {
+    async function carregar() {
+      const { data, error } = await supabase
+        .from("alunos")
+        .select("id, nome, matricula, foto_url, turma:turmas(nome, curso:cursos(nome))");
+
+      if (error) {
+        console.log(error.message);
+      } else {
+        setAlunos(
+          (data ?? []).map((a: any) => ({
+            id: String(a.id),
+            nome: a.nome,
+            curso: a.turma?.curso?.nome ?? "",
+            foto: a.foto_url ?? "https://i.pravatar.cc/200?img=1",
+          }))
+        );
+      }
+      setCarregando(false);
+    }
+    carregar();
+  }, []);
+
+  const alunosFiltrados = filtrarAlunos(alunos, {
     curso: cursoSelecionado,
     pesquisa,
   });
@@ -31,7 +58,10 @@ export default function Alunos() {
       return;
     }
 
-    router.push("./Aluno/perfilAluno");
+    router.push({
+      pathname: "/Aluno/perfilAluno",
+      params: { id: alunoId },
+    } as never);
   }
 
   return (
@@ -73,27 +103,31 @@ export default function Alunos() {
         ))}
       </View>
 
-      <ScrollView showsVerticalScrollIndicator={false}>
-        {alunosFiltrados.length === 0 && (
-          <Text style={styles.vazio}>Nenhum aluno encontrado.</Text>
-        )}
+      {carregando ? (
+        <ActivityIndicator size="large" color="#244A69" />
+      ) : (
+        <ScrollView showsVerticalScrollIndicator={false}>
+          {alunosFiltrados.length === 0 && (
+            <Text style={styles.vazio}>Nenhum aluno encontrado.</Text>
+          )}
 
-        {alunosFiltrados.map((aluno) => (
-          <TouchableOpacity
-            key={aluno.id}
-            style={styles.card}
-            onPress={() => abrirAluno(aluno.id)}
-          >
-            <Image source={{ uri: aluno.foto }} style={styles.foto} />
+          {alunosFiltrados.map((aluno) => (
+            <TouchableOpacity
+              key={aluno.id}
+              style={styles.card}
+              onPress={() => abrirAluno(aluno.id)}
+            >
+              <Image source={{ uri: aluno.foto }} style={styles.foto} />
 
-            <View>
-              <Text style={styles.nome}>{aluno.nome}</Text>
+              <View>
+                <Text style={styles.nome}>{aluno.nome}</Text>
 
-              <Text style={styles.curso}>{aluno.curso}</Text>
-            </View>
-          </TouchableOpacity>
-        ))}
-      </ScrollView>
+                <Text style={styles.curso}>{aluno.curso}</Text>
+              </View>
+            </TouchableOpacity>
+          ))}
+        </ScrollView>
+      )}
     </View>
   );
 }

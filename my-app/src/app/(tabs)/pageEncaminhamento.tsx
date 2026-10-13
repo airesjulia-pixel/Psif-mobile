@@ -1,5 +1,7 @@
-import { useState } from "react";
+import { useCallback, useState } from "react";
+import { useFocusEffect } from "expo-router";
 import {
+  ActivityIndicator,
   ScrollView,
   StyleSheet,
   Text,
@@ -9,24 +11,53 @@ import {
 } from "react-native";
 
 import Voltar from "../../components/voltar";
-import {
-  responderEncaminhamento,
-  rotuloDaUrgencia,
-  usePendentes,
-  validarRetorno,
-} from "../../data/encaminhamento";
+import { rotuloDaUrgencia, validarRetorno } from "../../data/encaminhamento";
 import { useSessao } from "../../data/sessao";
+import { supabase } from "../../../../lib/supabase";
 
 export default function EncaminhamentosRecebidos() {
   const sessao = useSessao();
-  const pendentes = usePendentes();
+  const [pendentes, setPendentes] = useState<any[]>([]);
+  const [carregando, setCarregando] = useState(true);
+  const [enviando, setEnviando] = useState(false);
   const [selecionado, setSelecionado] = useState<string | null>(null);
   const [parecer, setParecer] = useState("");
   const [orientacoes, setOrientacoes] = useState("");
   const [relatorio, setRelatorio] = useState("");
   const [erros, setErros] = useState<string[]>([]);
 
-  function responder(id: string) {
+  async function carregarPendentes() {
+    const { data, error } = await supabase
+      .from("encaminhamentos")
+      .select("*, aluna:alunos(nome)")
+      .eq("status", "pendente")
+      .order("created_at", { ascending: false });
+
+    if (error) {
+      console.log(error.message);
+    } else {
+      setPendentes(
+        (data ?? []).map((e: any) => ({
+          id: String(e.id),
+          alunoNome: e.aluna?.nome ?? "",
+          motivo: e.motivo,
+          descricao: e.descricao,
+          urgencia: e.urgencia,
+          professoraEmail: e.professor_email,
+        }))
+      );
+    }
+    setCarregando(false);
+  }
+
+  // recarrega toda vez que a tela volta a ficar visível
+  useFocusEffect(
+    useCallback(() => {
+      carregarPendentes();
+    }, [])
+  );
+
+  async function responder(id: string) {
     const dados = { parecer, orientacoes, relatorio };
     const problemas = validarRetorno(dados);
 
@@ -35,12 +66,34 @@ export default function EncaminhamentosRecebidos() {
       return;
     }
 
-    responderEncaminhamento(id, dados, sessao?.email ?? "");
+    setEnviando(true);
+
+    const { error } = await supabase
+      .from("encaminhamentos")
+      .update({
+        parecer,
+        orientacoes,
+        relatorio,
+        status: "respondido",
+        respondido_por: sessao?.email ?? "",
+        respondido_em: new Date().toISOString(),
+      })
+      .eq("id", id);
+
+    setEnviando(false);
+
+    if (error) {
+      console.log(error.message);
+      setErros(["Não foi possível enviar o retorno. Tente novamente."]);
+      return;
+    }
+
     setErros([]);
     setParecer("");
     setOrientacoes("");
     setRelatorio("");
     setSelecionado(null);
+    carregarPendentes();
   }
 
   return (
@@ -52,7 +105,9 @@ export default function EncaminhamentosRecebidos() {
         Responda com o parecer e as orientações para a professora.
       </Text>
 
-      {pendentes.length === 0 && (
+      {carregando && <ActivityIndicator size="large" color="#2f5d43" />}
+
+      {!carregando && pendentes.length === 0 && (
         <Text style={styles.vazio}>Nenhum encaminhamento pendente.</Text>
       )}
 
@@ -96,10 +151,13 @@ export default function EncaminhamentosRecebidos() {
               ))}
 
               <TouchableOpacity
-                style={styles.button}
+                style={[styles.button, enviando && { opacity: 0.6 }]}
+                disabled={enviando}
                 onPress={() => responder(encaminhamento.id)}
               >
-                <Text style={styles.buttonText}>Enviar retorno</Text>
+                <Text style={styles.buttonText}>
+                  {enviando ? "Enviando..." : "Enviar retorno"}
+                </Text>
               </TouchableOpacity>
             </View>
           ) : (
