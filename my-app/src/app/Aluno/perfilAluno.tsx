@@ -1,8 +1,33 @@
-import React, { useEffect, useState } from "react";
-import { View, Text, StyleSheet, Image, ActivityIndicator } from "react-native";
+
+import FontAwesome5 from "@expo/vector-icons/FontAwesome5";
 import { useLocalSearchParams } from "expo-router";
-import Voltar from "../../components/voltar";
+import React, { useEffect, useState } from "react";
+import {
+  ActivityIndicator,
+  Image,
+  Pressable,
+  StyleSheet,
+  Text,
+  View,
+} from "react-native";
 import { supabase } from "../../../../lib/supabase";
+import Voltar from "../../components/voltar";
+
+type ItemCardProps = {
+  icone: React.ComponentProps<typeof FontAwesome5>["name"];
+  titulo: string;
+  onPress?: () => void;
+};
+
+function ItemCard({ icone, titulo, onPress }: ItemCardProps) {
+  return (
+    <Pressable style={styles.card} onPress={onPress}>
+      <FontAwesome5 name={icone} size={20} color="#244A69" style={styles.icone} />
+      <Text style={styles.cardTexto}>{titulo}</Text>
+      <FontAwesome5 name="chevron-right" size={16} color="#244A69" />
+    </Pressable>
+  );
+}
 
 export default function PerfilAluno() {
   const { id } = useLocalSearchParams<{ id: string }>();
@@ -54,21 +79,10 @@ export default function PerfilAluno() {
       <Text style={styles.info}>Curso: {aluno.curso}</Text>
       <Text style={styles.info}>Status: {aluno.status}</Text>
 
-      <View style={styles.card}>
-        <Text>📄 Dados do aluno</Text>
-      </View>
-
-      <View style={styles.card}>
-        <Text>📊 Relatórios</Text>
-      </View>
-
-      <View style={styles.card}>
-        <Text>📝 Observações</Text>
-      </View>
-
-      <View style={styles.card}>
-        <Text>📚 Histórico</Text>
-      </View>
+      <ItemCard icone="file-alt" titulo="Dados do aluno" />
+      <ItemCard icone="chart-bar" titulo="Relatórios" />
+      <ItemCard icone="edit" titulo="Observações" />
+      <ItemCard icone="history" titulo="Histórico" />
     </View>
   );
 }
@@ -106,5 +120,19 @@ const styles = StyleSheet.create({
     padding: 18,
     borderRadius: 12,
     marginTop: 12,
+    flexDirection: "row",
+    alignItems: "center",
+    gap: 12,
+  },
+
+  icone: {
+    width: 26,
+    textAlign: "center",
+  },
+
+  cardTexto: {
+    flex: 1,
+    fontSize: 16,
+    color: "#244A69",
   },
 });
