@@ -87,7 +87,7 @@ export default function Observacoes() {
         style={styles.button}
         activeOpacity={0.85}
         onPress={() =>
-          router.push("/Atendimento/Encaminhamento/addObservacao" as never)
+          router.push("/Documento/addObservacao" as never)
         }
       >
         <FontAwesome5 name="plus" size={16} color="#fff" />
