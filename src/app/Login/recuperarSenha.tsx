@@ -1,229 +1,145 @@
-import FontAwesome5 from "@expo/vector-icons/FontAwesome5";
-import React from "react";
-import {
-  View,
-  Text,
-  TextInput,
-  TouchableOpacity,
-  StyleSheet,
-} from "react-native";
-import { router } from "expo-router";
+import Feather from '@expo/vector-icons/Feather';
+import FontAwesome from '@expo/vector-icons/FontAwesome';
+import FontAwesome5 from '@expo/vector-icons/FontAwesome5';
+import { Tabs, useRouter } from 'expo-router';
+import { Platform, Text, TouchableOpacity } from 'react-native';
 
-import Voltar from "../../components/voltar";
+import { encerrarSessao } from '../../data/sessao';
 
-export default function RecuperarSenha() {
-  return (
-    <View style={styles.container}>
-      <Voltar />
+// Mesma paleta da tela de recuperar senha
+const COR = {
+    primaria: '#244A69',
+    secundaria: '#6388A5',
+    texto: '#526C80',
+    inativo: '#7B8B99',
+    fundo: '#DCEAF5',
+    fundoClaro: '#B8D8F0',
+    borda: '#C3D9E9',
+    branco: '#FFFFFF',
+};
 
-      <View style={styles.iconArea}>
-        <View style={styles.iconCircle}>
-          <FontAwesome5
-            name="lock"
-            size={45}
-            color="#244A69"
-          />
-          <View style={styles.mailIcon}>
-            <FontAwesome5
-              name="envelope"
-              size={22}
-              color="#FFFFFF"
+export default function TabsLayout() {
+    const router = useRouter();
+
+    function sair() {
+        encerrarSessao();
+        router.replace('/Login/login');
+    }
+
+    return (
+        <Tabs
+            screenOptions={{
+             
+                headerStyle: {
+                    backgroundColor: COR.primaria,
+                    elevation: 0,
+                    shadowOpacity: 0,
+                },
+                headerTintColor: COR.branco,
+                headerTitleStyle: {
+                    fontSize: 18,
+                    fontWeight: 'bold',
+                    color: COR.branco,
+                },
+                headerTitleAlign: 'left',
+
+               
+                tabBarActiveTintColor: COR.primaria,
+                tabBarInactiveTintColor: COR.inativo,
+                tabBarLabelStyle: {
+                    fontSize: 11,
+                    fontWeight: '600',
+                    marginBottom: Platform.OS === 'ios' ? 0 : 6,
+                },
+                tabBarStyle: {
+                    backgroundColor: COR.branco,
+                    borderTopWidth: 1,
+                    borderTopColor: COR.borda,
+                    height: Platform.OS === 'ios' ? 88 : 66,
+                    paddingTop: 6,
+                    elevation: 8,
+                },
+                tabBarItemStyle: {
+                    borderRadius: 12,
+                    marginHorizontal: 6,
+                    marginBottom: Platform.OS === 'ios' ? 0 : 4,
+                },
+                tabBarActiveBackgroundColor: COR.fundo,
+                sceneStyle: { backgroundColor: COR.fundo },
+            }}
+        >
+            <Tabs.Screen
+                name="index"
+                options={{
+                    title: 'Olá, Professor(a)',
+                    tabBarLabel: 'Início',
+                    headerRight: () => (
+                        <TouchableOpacity
+                            onPress={sair}
+                            activeOpacity={0.7}
+                            style={{
+                                flexDirection: 'row',
+                                alignItems: 'center',
+                                backgroundColor: COR.branco,
+                                borderRadius: 20,
+                                paddingVertical: 6,
+                                paddingHorizontal: 12,
+                                marginRight: 12,
+                            }}
+                        >
+                            <Feather
+                                name="log-out"
+                                size={16}
+                                color={COR.primaria}
+                            />
+
+                            <Text
+                                style={{
+                                    marginLeft: 6,
+                                    fontSize: 13,
+                                    fontWeight: '600',
+                                    color: COR.primaria,
+                                }}
+                            >
+                                Sair
+                            </Text>
+                        </TouchableOpacity>
+                    ),
+                    tabBarIcon: ({ size, color }) => (
+                        <FontAwesome name="home" size={size} color={color} />
+                    ),
+                }}
             />
-          </View>
-        </View>
-      </View>
 
-      <Text style={styles.title}>Recuperar senha</Text>
+            <Tabs.Screen
+                name="observacao"
+                options={{
+                    title: 'Observação',
+                    tabBarIcon: ({ size, color }) => (
+                        <Feather name="edit" size={size} color={color} />
+                    ),
+                }}
+            />
 
-      <Text style={styles.subtitle}>
-        Informe seu e-mail para receber as instruções
-        de recuperação de senha.
-      </Text>
+            <Tabs.Screen
+                name="pageAluno"
+                options={{
+                    title: 'Alunos',
+                    tabBarIcon: ({ size, color }) => (
+                        <FontAwesome5 name="users" size={size} color={color} />
+                    ),
+                }}
+            />
 
-      <View style={styles.inputContainer}>
-        <FontAwesome5
-          name="envelope"
-          size={18}
-          color="#244A69"
-          style={styles.inputIcon}
-        />
-
-        <TextInput
-          placeholder="Seu e-mail"
-          placeholderTextColor="#7B8B99"
-          style={styles.input}
-          keyboardType="email-address"
-          autoCapitalize="none"
-        />
-      </View>
-
-      <TouchableOpacity style={styles.button}>
-        <FontAwesome5
-          name="paper-plane"
-          size={16}
-          color="#FFFFFF"
-          style={styles.buttonIcon}
-        />
-        <Text style={styles.buttonText}>
-          Enviar instruções
-        </Text>
-      </TouchableOpacity>
-
-      <TouchableOpacity
-        style={styles.backButton}
-        onPress={() => router.back()}
-      >
-        <FontAwesome5
-          name="arrow-left"
-          size={15}
-          color="#244A69"
-        />
-        <Text style={styles.backLogin}>
-          Voltar para o login
-        </Text>
-      </TouchableOpacity>
-
-      <View style={styles.footer}>
-        <FontAwesome5
-          name="shield-alt"
-          size={16}
-          color="#6388A5"
-        />
-        <Text style={styles.footerText}>
-          PSIF • Acompanhamento psicopedagógico
-        </Text>
-      </View>
-    </View>
-  );
+            <Tabs.Screen
+                name="pageEncaminhamento"
+                options={{
+                    title: 'Enviados',
+                    tabBarIcon: ({ size, color }) => (
+                        <FontAwesome name="send" size={size} color={color} />
+                    ),
+                }}
+            />
+        </Tabs>
+    );
 }
-
-const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    backgroundColor: "#DCEAF5",
-    padding: 25,
-    alignItems: "center",
-  },
-
-  iconArea: {
-    marginTop: 35,
-    marginBottom: 20,
-    alignItems: "center",
-  },
-
-  iconCircle: {
-    width: 115,
-    height: 115,
-    borderRadius: 60,
-    backgroundColor: "#FFFFFF",
-    alignItems: "center",
-    justifyContent: "center",
-    borderWidth: 2,
-    borderColor: "#B8D8F0",
-  },
-
-  mailIcon: {
-    position: "absolute",
-    right: -5,
-    bottom: 0,
-    width: 42,
-    height: 42,
-    borderRadius: 22,
-    backgroundColor: "#244A69",
-    alignItems: "center",
-    justifyContent: "center",
-    borderWidth: 3,
-    borderColor: "#DCEAF5",
-  },
-
-  title: {
-    fontSize: 28,
-    fontWeight: "bold",
-    textAlign: "center",
-    marginTop: 10,
-    marginBottom: 12,
-    color: "#244A69",
-  },
-
-  subtitle: {
-    fontSize: 15,
-    color: "#526C80",
-    textAlign: "center",
-    lineHeight: 23,
-    marginBottom: 30,
-  },
-
-  inputContainer: {
-    width: "100%",
-    height: 55,
-    backgroundColor: "#FFFFFF",
-    borderRadius: 12,
-    flexDirection: "row",
-    alignItems: "center",
-    paddingHorizontal: 15,
-    borderWidth: 1,
-    borderColor: "#C3D9E9",
-    marginBottom: 20,
-  },
-
-  inputIcon: {
-    marginRight: 12,
-  },
-
-  input: {
-    flex: 1,
-    fontSize: 15,
-    color: "#244A69",
-  },
-
-  button: {
-    width: "100%",
-    backgroundColor: "#244A69",
-    padding: 17,
-    borderRadius: 12,
-    flexDirection: "row",
-    alignItems: "center",
-    justifyContent: "center",
-    gap: 10,
-    elevation: 3,
-  },
-
-  buttonIcon: {
-    marginRight: 2,
-  },
-
-  buttonText: {
-    color: "#FFFFFF",
-    textAlign: "center",
-    fontWeight: "bold",
-    fontSize: 16,
-  },
-
-  backButton: {
-    flexDirection: "row",
-    alignItems: "center",
-    justifyContent: "center",
-    marginTop: 25,
-    gap: 8,
-  },
-
-  backLogin: {
-    color: "#244A69",
-    fontSize: 15,
-    fontWeight: "600",
-  },
-
-  footer: {
-    marginTop: "auto",
-    paddingTop: 25,
-    flexDirection: "row",
-    alignItems: "center",
-    justifyContent: "center",
-    gap: 8,
-  },
-
-  footerText: {
-    fontSize: 11,
-    color: "#6388A5",
-  },
-});

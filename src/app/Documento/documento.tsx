@@ -1,5 +1,6 @@
 
 import FontAwesome5 from "@expo/vector-icons/FontAwesome5";
+import { supabase } from "../../../lib/supabase";
 import React, { useCallback, useEffect, useState } from "react";
 
 import {
@@ -12,7 +13,7 @@ import {
   Platform,
 } from "react-native";
 
-import Voltar from "../../components/voltar";
+import Voltar from "@/components/voltar";
 
 type Documento = {
   id: string;

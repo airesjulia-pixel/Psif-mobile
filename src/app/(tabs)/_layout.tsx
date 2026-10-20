@@ -2,24 +2,81 @@ import Feather from '@expo/vector-icons/Feather';
 import FontAwesome from '@expo/vector-icons/FontAwesome';
 import FontAwesome5 from '@expo/vector-icons/FontAwesome5';
 import { Tabs, useRouter } from 'expo-router';
-import { Text, TouchableOpacity, View } from 'react-native';
+import { Platform, Text, TouchableOpacity } from 'react-native';
 
 import { encerrarSessao } from '../../data/sessao';
+
+const COR = {
+    marinho: '#1e3a5f',     
+    primaria: '#3b82c4',     
+    primariaClara: '#e8f1fb', 
+    borda: '#dce6f2',
+    inativo: '#9aa9bc',
+    fundo: '#f4f8fc',
+    branco: '#ffffff',
+};
 
 export default function TabsLayout() {
     const router = useRouter();
 
     function sair() {
         encerrarSessao();
-        router.replace('/Login/pageLogin');
+        router.replace('/Login/login');
     }
 
     return (
-        <Tabs>
+        <Tabs
+            screenOptions={{
+               
+                headerStyle: {
+                    backgroundColor: COR.branco,
+                    elevation: 0,
+                    shadowOpacity: 0,
+                    borderBottomWidth: 1,
+                    borderBottomColor: COR.borda,
+                },
+                headerTintColor: COR.marinho,
+                headerTitleStyle: {
+                    fontSize: 18,
+                    fontWeight: '700',
+                    color: COR.marinho,
+                },
+                headerTitleAlign: 'left',
+
+                // Barra de abas
+                tabBarActiveTintColor: COR.primaria,
+                tabBarInactiveTintColor: COR.inativo,
+                tabBarLabelStyle: {
+                    fontSize: 11,
+                    fontWeight: '600',
+                    marginBottom: Platform.OS === 'ios' ? 0 : 6,
+                },
+                tabBarStyle: {
+                    backgroundColor: COR.branco,
+                    borderTopWidth: 1,
+                    borderTopColor: COR.borda,
+                    height: Platform.OS === 'ios' ? 88 : 66,
+                    paddingTop: 6,
+                    elevation: 8,
+                    shadowColor: '#0f2a4a',
+                    shadowOffset: { width: 0, height: -2 },
+                    shadowOpacity: 0.05,
+                    shadowRadius: 8,
+                },
+                tabBarItemStyle: {
+                    borderRadius: 14,
+                    marginHorizontal: 6,
+                    marginBottom: Platform.OS === 'ios' ? 0 : 4,
+                },
+                tabBarActiveBackgroundColor: COR.primariaClara,
+                sceneStyle: { backgroundColor: COR.fundo },
+            }}
+        >
             <Tabs.Screen
                 name="index"
                 options={{
                     title: 'Olá, Professor(a)',
+                    tabBarLabel: 'Início',
                     headerRight: () => (
                         <TouchableOpacity
                             onPress={sair}
@@ -27,19 +84,19 @@ export default function TabsLayout() {
                             style={{
                                 flexDirection: 'row',
                                 alignItems: 'center',
-                                backgroundColor: '#fdf1f0',
+                                backgroundColor: COR.primariaClara,
                                 borderWidth: 1,
-                                borderColor: '#e0b4af',
+                                borderColor: COR.borda,
                                 borderRadius: 20,
                                 paddingVertical: 6,
                                 paddingHorizontal: 12,
-                                marginRight: 10,
+                                marginRight: 12,
                             }}
                         >
                             <Feather
                                 name="log-out"
                                 size={16}
-                                color="#c0392b"
+                                color={COR.primaria}
                             />
 
                             <Text
@@ -47,22 +104,16 @@ export default function TabsLayout() {
                                     marginLeft: 6,
                                     fontSize: 13,
                                     fontWeight: '600',
-                                    color: '#c0392b',
+                                    color: COR.primaria,
                                 }}
                             >
                                 Sair
                             </Text>
                         </TouchableOpacity>
                     ),
-                    tabBarIcon: ({ size, color }) => {
-                        return (
-                            <FontAwesome
-                                name="home"
-                                size={size}
-                                color={color}
-                            />
-                        );
-                    },
+                    tabBarIcon: ({ size, color }) => (
+                        <FontAwesome name="home" size={size} color={color} />
+                    ),
                 }}
             />
 
@@ -70,15 +121,9 @@ export default function TabsLayout() {
                 name="observacao"
                 options={{
                     title: 'Observação',
-                    tabBarIcon: ({ size, color }) => {
-                        return (
-                            <Feather
-                                name="edit"
-                                size={size}
-                                color={color}
-                            />
-                        );
-                    },
+                    tabBarIcon: ({ size, color }) => (
+                        <Feather name="edit" size={size} color={color} />
+                    ),
                 }}
             />
 
@@ -86,15 +131,9 @@ export default function TabsLayout() {
                 name="pageAluno"
                 options={{
                     title: 'Alunos',
-                    tabBarIcon: ({ size, color }) => {
-                        return (
-                            <FontAwesome5
-                                name="users"
-                                size={size}
-                                color={color}
-                            />
-                        );
-                    },
+                    tabBarIcon: ({ size, color }) => (
+                        <FontAwesome5 name="users" size={size} color={color} />
+                    ),
                 }}
             />
 
@@ -102,15 +141,9 @@ export default function TabsLayout() {
                 name="pageEncaminhamento"
                 options={{
                     title: 'Enviados',
-                    tabBarIcon: ({ size, color }) => {
-                        return (
-                            <FontAwesome
-                                name="send"
-                                size={size}
-                                color={color}
-                            />
-                        );
-                    },
+                    tabBarIcon: ({ size, color }) => (
+                        <FontAwesome name="send" size={size} color={color} />
+                    ),
                 }}
             />
         </Tabs>
